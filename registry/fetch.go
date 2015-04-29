@@ -1,6 +1,7 @@
 package registry
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -202,7 +203,10 @@ func (re *RegistryEndpoint) Ancestry(img *ImageRef) ([]string, error) {
 		return emptySet, err
 	}
 
-	set := strings.Split(strings.Trim(string(buf), "[]"), ",")
+	set := []string{}
+	if err := json.Unmarshal(buf, &set); err != nil {
+		return emptySet, err
+	}
 	img.SetAncestry(set)
 	return img.Ancestry(), nil
 }
